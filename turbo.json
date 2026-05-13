@@ -1,7 +1,14 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
-  "globalEnv": ["PORT"],
+  "globalEnv": [
+    "PORT",
+    "DATABASE_URL",
+    "NODE_ENV",
+    "AUTO_MIGRATE",
+    "DRIZZLE_MIGRATIONS_FOLDER",
+    "SEED_DEMO_DATA"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

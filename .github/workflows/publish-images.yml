@@ -27,8 +27,16 @@ jobs:
         include:
           - app: api
             dockerfile: apps/api/Dockerfile
+            build_args: ""
           - app: web
             dockerfile: apps/web/Dockerfile
+            build_args: ""
+          - app: admin-web
+            dockerfile: apps/admin-web/Dockerfile
+            # Vite inlines VITE_* at build time. Override via the
+            # ADMIN_WEB_API_URL repo variable for non-local deploys.
+            build_args: |
+              VITE_API_URL=${{ vars.ADMIN_WEB_API_URL || 'http://localhost:3001' }}
 
     steps:
       - name: Checkout
@@ -64,5 +72,6 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: ${{ matrix.build_args }}
           cache-from: type=gha,scope=${{ matrix.app }}
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}
