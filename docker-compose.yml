@@ -58,5 +58,38 @@ services:
     ports:
       - "3002:3002"
 
+  k8s-orchestrator-api:
+    image: scalable-commerce-k8s-orchestrator-api
+    build:
+      context: .
+      dockerfile: apps/k8s-orchestrator-api/Dockerfile
+    environment:
+      PORT: 3010
+      K8S_APPLY_MODE: ${K8S_APPLY_MODE:-dry-run}
+      KUBECONFIG: /kube/config
+      NAMESPACE_PREFIX: ${NAMESPACE_PREFIX:-sc}
+      DEFAULT_IMAGE_REGISTRY: ${DEFAULT_IMAGE_REGISTRY:-ghcr.io/devsargam/multi-tenant-commerce}
+      DEFAULT_API_IMAGE: ${DEFAULT_API_IMAGE:-ghcr.io/devsargam/multi-tenant-commerce-api:latest}
+      DEFAULT_WEB_IMAGE: ${DEFAULT_WEB_IMAGE:-ghcr.io/devsargam/multi-tenant-commerce-web:latest}
+      DEFAULT_ADMIN_WEB_IMAGE: ${DEFAULT_ADMIN_WEB_IMAGE:-ghcr.io/devsargam/multi-tenant-commerce-admin-web:latest}
+      LOCAL_ACCESS_PORT_BASE: ${LOCAL_ACCESS_PORT_BASE:-3100}
+    volumes:
+      - ${KUBECONFIG:-/Users/sargampoudel/.kube/config}:/kube/config:ro
+    ports:
+      - "3010:3010"
+
+  provision-web:
+    image: scalable-commerce-provision-web
+    build:
+      context: .
+      dockerfile: apps/provision-web/Dockerfile
+      args:
+        VITE_ORCHESTRATOR_API_URL: http://localhost:3010
+    depends_on:
+      k8s-orchestrator-api:
+        condition: service_started
+    ports:
+      - "3003:3003"
+
 volumes:
   postgres-data:

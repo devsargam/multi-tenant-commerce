@@ -27,6 +27,9 @@ COPY packages packages
 
 RUN pnpm --filter web build
 RUN pnpm --filter web deploy --prod /out
+RUN cp -R apps/web/.next /out/.next && \
+    cp -R apps/web/public /out/public && \
+    cp apps/web/next.config.js /out/next.config.js
 
 ## Stage 3: minimal runtime image
 FROM node:22-alpine AS runner
