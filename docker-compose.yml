@@ -1,0 +1,20 @@
+services:
+  api:
+    image: scalable-commerce-api
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      PORT: 3001
+    ports:
+      - "3001:3001"
+
+  web:
+    image: scalable-commerce-web
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      PORT: 3000
+    ports:
+      - "3000:3000"
